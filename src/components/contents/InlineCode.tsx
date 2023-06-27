@@ -6,7 +6,13 @@ interface InlineCodeProps {
 
 const InlineCode: React.FunctionComponent<InlineCodeProps> = ({ children }) => {
   return (
-    <code className={twclsx('px-2 py-1 rounded border', 'dark:text-main-1', 'border-main-2 dark:border-main-3')}>
+    <code
+      className={twclsx(
+        'px-0.5 py-0.5 rounded border',
+        'dark:text-main-1',
+        'border-main-2 dark:border-main-3'
+      )}
+    >
       {children}
     </code>
   )

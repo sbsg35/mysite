@@ -27,7 +27,7 @@ export const generateMetaDataBlog = (data: MetaData): CustomSeoProps => {
       images: [
         {
           // TODDO: update your default thumbnail at public/static/
-          url: data.thumbnail ?? '/static/default-thumbnail.jpg',
+          url: data.thumbnail ?? '/static/dex.png',
           alt: data.title,
           width: 1200,
           height: 600

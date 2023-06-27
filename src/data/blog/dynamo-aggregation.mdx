@@ -1,0 +1,275 @@
+---
+featured: true
+title: 'DynamoDb streams'
+summary: 'Use streams to aggregate data in Dynamo'
+published: '06/27/2023'
+last_modified: '06/27/2023'
+author_name: 'Raj Ghuman'
+author_image: '/static/avatar.jpeg'
+thumbnail: '/static/dynamo.jpeg'
+tags: ['DynamoDB', 'AWS', 'Serverless framework']
+keywords: ['How to do aggregation in DynamoDb', 'Serverless framework']
+---
+
+## Introduction
+
+DynamoDB doesn't support aggregation queries out of the box.
+
+So we can't do things like this very easily:
+
+```sql
+SELECT SUM(amount) FROM sales;
+```
+
+There is a work around using DynamoDB streams which I will discuss in this post.
+
+For the record, I would just use relational database, but I wanted to learn a
+bit more about Dynamo.
+
+## Background
+
+I am building a proof of concept pest tracker software for a local volunteer group.
+Members of the group record how many pests they caught in a given month. This information is used
+to track the success of the program and to display insights for stakeholders.
+
+Here is a what a simplified version `traprecord` table looks like.
+
+<div class='relative overflow-x-auto'>
+  <table class='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
+    <thead class='text-xs text-gray-700  bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
+      <tr>
+        <th scope='col' class='px-6 py-3'>
+          ID (partition key)
+        </th>
+        <th scope='col' class='px-6 py-3'>
+          userId (GSI)
+        </th>
+        <th scope='col' class='px-6 py-3'>
+          trapcount
+        </th>
+        <th scope='col' class='px-6 py-3'>
+          monthyear
+        </th>
+ 
+      </tr>
+    </thead>
+    <tbody>
+      <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
+        <td class='px-6 py-4'>123-2023-05</td>
+        <td class='px-6 py-4'>123</td>
+        <td class='px-6 py-4'>5</td>
+        <td class='px-6 py-4'>2023-05</td>
+      </tr>
+      <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
+        <td class='px-6 py-4'>124-2023-05</td>
+        <td class='px-6 py-4'>124</td>
+        <td class='px-6 py-4'>11</td>
+        <td class='px-6 py-4'>2023-05</td>
+      </tr>
+      <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
+        <td class='px-6 py-4'>125-2023-05</td>
+        <td class='px-6 py-4'>125</td>
+        <td class='px-6 py-4'>3</td>
+        <td class='px-6 py-4'>2023-05</td>
+      </tr>
+    </tbody>
+
+  </table>
+</div>
+
+## What I needed to do
+
+I needed the total `trapcount` for each month.
+
+The equivalent SQL statement would be something like this:
+
+```sql
+SELECT monthyear, SUM(trapcount)
+FROM traprecord
+GROUP BY monthyear;
+```
+
+However this is not possible in DynamoDB.
+
+One way to achieve this is with [DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html).
+
+## DynamoDB streams
+
+You can think of DynamoDB streams as SQL triggers.
+When a record in a table changes (CREATE, UPDATE or DELETE), we can run a lambda function
+that does our business logic with the data.
+
+So the approach is
+
+1. Create a new table `traprecord-monthly`
+2. Make the partion key & primary key the `monthyear`
+3. Every time a user adds a new traprecord, we run a lambda function to update
+   this table based on the event type (UPDATE, CREATE, DELETE).
+
+Here is what the `traprecord-monthly` table might look like if we aggregated the above data.
+
+<div class='relative overflow-x-auto'>
+  <table class='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
+    <thead class='text-xs text-gray-700  bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
+      <tr>
+        <th scope='col' class='px-6 py-3'>
+          ID (partition key)
+        </th>
+        <th scope='col' class='px-6 py-3'>
+          total
+        </th>
+ 
+      </tr>
+    </thead>
+    <tbody>
+      <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
+ 
+        <td class='px-6 py-4'>2023-05</td>
+        <td class='px-6 py-4'>19</td>
+      </tr>
+ 
+ 
+    </tbody>
+
+  </table>
+</div>
+
+## How to setup streams
+
+I use the [Serverless framework](https://www.serverless.com/). It's a wrapper around CloudFormation which makes it very easy
+to deploy your AWS stack.
+
+Here is what your serverless.yml (or serverless.ts) file might look like.
+The key is adding the `StreamSpecification`. We use `NEW_AND_OLD_IMAGES` here
+since we may need to compute the difference if the event is an `UPDATE` type.
+
+```ts
+...
+resources: {
+  Resources: {
+    TraprecordTable: {
+      Type: "AWS::DynamoDB::Table",
+      Properties: {
+        TableName: "${self:service}-${sls:stage}-traprecord",
+        AttributeDefinitions: [
+          ...
+        ],
+        KeySchema: [...],
+        BillingMode: "PAY_PER_REQUEST",
+        // THIS IS KEY
+        StreamSpecification: { StreamViewType: "NEW_AND_OLD_IMAGES" },
+        GlobalSecondaryIndexes: [...],
+      },
+    },
+    MonthlyAnalyticsTable: {
+      Type: "AWS::DynamoDB::Table",
+      Properties: {
+        TableName: "${self:service}-${sls:stage}-month-analytics",
+        AttributeDefinitions: [...],
+        KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
+        GlobalSecondaryIndexes: [...],
+        BillingMode: "PAY_PER_REQUEST",
+      },
+    },
+...
+```
+
+Great now all we have to do is set up a lambda function to fire whenever there is
+an update to the `traprecord` table.
+
+```ts
+...
+functions: {
+  ...,
+  "traprecord-aggregate": {
+    handler: "src/handlers/analytics.aggregate",
+    description: "aggregate count records",
+    events: [
+      {
+        stream: {
+          type: "dynamodb",
+          arn: {
+            "Fn::GetAtt": ["TraprecordTable", "StreamArn"],
+          },
+          startingPosition: "LATEST", // The position in a stream from which to start reading
+        },
+      },
+    ],
+  },
+},
+...
+```
+
+## Stream lambda handler
+
+Here is what the lambda handler might look like.
+
+```ts
+export const ddbUnmarshall = (record: any) => DynamoDB.Converter.unmarshall(record)
+
+export const aggregate = async (event: DynamoDBStreamEvent) => {
+  const all = event.Records.map(async (record) => {
+    // The newImage and oldImage take shape of the data from the `traprecord` table
+    const newImage = ddbUnmarshall(record.dynamodb?.NewImage)
+    const oldImage = ddbUnmarshall(record.dynamodb?.OldImage)
+    const eventName = record.eventName
+
+    return aggregateData(newImage, oldImage, eventName)
+  })
+
+  await Promise.all(all)
+}
+```
+
+The `aggregateData` function needs to handle 3 event types, `INSERT`, `MODIFY` and `REMOVE`.
+We need to run [Update expressions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html)
+on each event to keep the aggregation table in sync.
+I won't fill in all the business logic.
+
+I used the `ADD` update expression.
+
+```ts
+const docClient = new DynamoDB.DocumentClient();
+
+export const aggregateData = async (
+  newImage,
+  oldImage,
+  eventName
+) => {
+  try {
+    const { trapcount, monthyear} = newImage;
+    const { trapcount: trapcountOld, monthyear: monthyearOld } = oldImage;
+
+    if (eventName === 'INSERT') {
+      // 1. Get the trapcount from the oldImage
+      // 2. Add that from the total for the given monthyear
+
+      await docClient.update(
+        {
+          TableName: "traprecord-monthly",
+          Key: { id: `${monthyear}` },
+          UpdateExpression: "ADD #trapcount :c",
+          ExpressionAttributeValues: {
+            ":c": trapcount,
+          },
+          ExpressionAttributeNames: {
+            "#trapcount": "total",
+          },
+          ReturnValues: "ALL_NEW",
+        }
+      ).promise()
+    }
+
+    if (eventName === 'MODIFY') {
+      // 1. Find the difference in trapcount using the newImage and oldImage
+      // 2. Add (or subtract) that trapcount from the monthyear
+    }
+
+    if (eventName === 'REMOVE') {
+      //1. Get the trapcount from the oldImage
+      //2. Subtract that from the total for the monthyear
+    } catch(e) {
+
+    }
+}
+```

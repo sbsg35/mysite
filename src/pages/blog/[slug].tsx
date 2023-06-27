@@ -32,7 +32,7 @@ const BlogPost: NextPage<BlogPostProps> = ({ data, mdxSource }) => {
       <article>
         <figure className='w-full pt-0'>
           <CustomImage
-            src={data.thumbnail ?? '/static/default-thumbnail.jpg'}
+            src={data.thumbnail ?? '/static/dex.png'}
             alt={data.title}
             display='intrinsic'
             width={768}
@@ -75,7 +75,9 @@ const BlogPost: NextPage<BlogPostProps> = ({ data, mdxSource }) => {
 export const getStaticPaths: GetStaticPaths = async () => {
   const blogs = await getBlog()
 
-  const paths = blogs.map((blog) => ({ params: { slug: blog.slug } })) as GetStaticPathsResult['paths']
+  const paths = blogs.map((blog) => ({
+    params: { slug: blog.slug }
+  })) as GetStaticPathsResult['paths']
 
   return {
     fallback: false,

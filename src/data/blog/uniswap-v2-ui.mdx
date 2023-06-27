@@ -1,0 +1,92 @@
+---
+featured: true
+title: 'Uniswap V2 interface, from scratch, part 1'
+summary: 'If you are planning on forking Uniswap V2, but you want to have a custom frontend, this post is for you.'
+published: '06/27/2023'
+last_modified: '06/27/2023'
+author_name: 'Raj Ghuman'
+author_image: '/static/avatar.jpeg'
+tags: ['Uniswap', 'Web3', 'Blockchain', 'Frontend']
+keywords: ['Uniswap v2 interface', 'Uniswap clone']
+---
+
+## Introduction
+
+If you are planning on forking Uniswap V2, but you want to have a custom frontend, this post is for you.
+
+I was tasked to build the [SOMA.finance](https://www.soma.finance/) Decentralised Exchange (DEX) and Liquidity platform.
+The contracts were based on Uniswap V2 contracts with security/whitelist additions.
+
+In this article I will talk about Swap and do a seperate article on Liquidity.
+
+I will be doing a post which goes deep into the code and Uniswap concepts. For now, this is a surface level approach.
+
+## Initial steps
+
+I originally forked the [Uniswap V2 interface](https://github.com/Uniswap/interface/releases/tag/v2.6.5) repository and it worked fairly seamlessly with our contracts after some wrangling. Surely enough I ran into
+some problems;
+
+- Codebase was outdated
+- It had a lot of stuff we didn't need
+- Difficult to expand it and build new features on it
+- It was very slow
+- We needed it to fit within the rest of our theme and design system
+- Didn't fit in with our existing stack
+
+Given the above, I investigated building the frontend from scratch and it was easier than expected.
+
+**TLDR**
+
+- If you want to build something quickly, this [article
+  by Ben Haslam](https://medium.com/clearmatics/how-i-made-a-uniswap-interface-from-scratch-b51e1027ca87) is a good starting point.
+- If you want to build something more scalable, utilising the [V2 SDK](https://github.com/Uniswap/v2-sdk) is the best way to go.
+
+## Has this been done before
+
+Obviously there are a gazillion forks of Uniswap interface, but I was looking for a fork without all the extra stuff. The [article
+by Ben Haslam](https://medium.com/clearmatics/how-i-made-a-uniswap-interface-from-scratch-b51e1027ca87) was a really good starting point. My main concern with this approach was that it
+was using direct web3 calls to fetch the swap prices with the `getAmountsOut` method.
+
+## Uniswap V2 SDK
+
+I recommend leveraging the [V2 SDK](https://github.com/Uniswap/v2-sdk) if you want to build a custom frontend.
+It has fantastic utilities which make it very easy to build the interface.
+
+The advantages of using the SDK
+
+- It has all the methods which give you all the data you need for a trade or a liquidity transaction
+- It fantastic [utilities and interfaces](https://docs.uniswap.org/sdk/v2/reference/fractions) which make it very easy to work with BigNumbers
+- You don't need to do any Uniswap math!
+
+Make sure to update the `FACTORY_ADDRESS` and `INIT_CODE_HASH` in [this file](https://github.com/Uniswap/v2-sdk/blob/main/src/constants.ts).
+
+## Swap
+
+Below are the methods you need from the Uniswap SDK to execute a swap.
+You will need to construct the arguments for these methods choosing whichever libraries you prefer.
+
+### Prior to executing swap
+
+Use these methods from the SDK to get the data needed **before** executing a swap.
+
+`Trade.bestTradeExactIn`
+
+This will find the best path for a trade, given a list of pairs. It returns a `Trade` object,
+which has all the information you need to display before making a trade.
+
+`Trade.bestTradeExactOut`
+
+Works as above but for exact out trades.
+
+## Executing a swap
+
+#### `Router.swapCallParameters`
+
+Use this to generate the function call parameters to actually execute the swap.
+You can use ethers or web3.js to execute the call.
+
+## Useful links
+
+- [V2 sdk docs](https://docs.uniswap.org/contracts/v2/overview)
+- [V2 sdk code](https://github.com/Uniswap/v2-sdk/tree/main)
+- [V2 interface](https://github.com/Uniswap/interface/releases/tag/v2.6.5)

@@ -28,7 +28,9 @@ const BlogPage: NextPage<BlogPageProps> = ({ latestPost = [], allPost = [] }) =>
 
       <Searchbar onChange={handleChange} value={query} placeholder='Search Posts..' />
 
-      {query.length === 0 && <BlogList blogs={latestPost} title='Latest Post' className='mb-20' layout='column' />}
+      {query.length === 0 && (
+        <BlogList blogs={latestPost} title='Latest Post' className='mb-20' layout='column' />
+      )}
       {query.length === 0 && <BlogList blogs={allPost} title='All Post' layout='column' />}
 
       {query.length > 0 && filteredBlog.length > 0 ? (
@@ -50,7 +52,11 @@ export const getStaticProps: GetStaticProps = async () => {
         .map((b) => ({ ...b.data, slug: b.slug }))
         // sort descending by date
         .sort((a, b) =>
-          new Date(a.published) > new Date(a.published) ? 1 : new Date(a.published) < new Date(b.published) ? -1 : 0
+          new Date(a.published) > new Date(a.published)
+            ? 1
+            : new Date(a.published) < new Date(b.published)
+            ? -1
+            : 0
         )
         // cut the first 3 and so on, leave only 2 latest post
         .slice(0, 2),

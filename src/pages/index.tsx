@@ -1,4 +1,3 @@
-import UnstyledLink from '@/components/atoms/UnstyledLink'
 import BlogList from '@/components/organism/BlogList'
 import HeroWithPhoto from '@/components/template/HeroWithPhoto'
 import Layout from '@/components/template/Layout'
@@ -6,7 +5,6 @@ import Layout from '@/components/template/Layout'
 import { getBlog, ownerName } from '@/helpers'
 import { twclsx } from '@/libs/twclsx'
 
-import { ArrowSmRightIcon } from '@heroicons/react/outline'
 import type { GetStaticProps, NextPage } from 'next'
 import { Blog } from 'next-starter-blog'
 
@@ -16,9 +14,9 @@ interface HomeProps {
 
 const Home: NextPage<HomeProps> = ({ blogs = [] }) => {
   const meta = {
-    title: ownerName,
+    title: ownerName + ' G',
     template: 'Personal Blog',
-    description: `I'm ${ownerName}, a software engineer in one of the biggest tech industry in the world, I personally writing mostly about web development and tech careers.`,
+    description: `I'm ${ownerName}, a software engineer currently working for SOMA.finance.`,
     openGraph: {
       images: [
         {
@@ -33,32 +31,13 @@ const Home: NextPage<HomeProps> = ({ blogs = [] }) => {
 
   return (
     <Layout as='main' {...meta}>
-      <HeroWithPhoto image='/static/avatar.jpg' imageAlt={ownerName} {...meta}>
+      <HeroWithPhoto image='/static/avatar.jpeg' imageAlt={ownerName} {...meta}>
         <p className={twclsx('max-w-prose mt-2')}>
-          If you want to get in touch with me, please catch me on one of my social media, I&apos;m always open when
-          I&apos;m out of my office.
+          If you want to get in touch with me, please reach out to me on linkedin.
         </p>
       </HeroWithPhoto>
 
-      <BlogList blogs={blogs} title='Featured Post'>
-        <UnstyledLink
-          href='/blog'
-          className={twclsx(
-            'group',
-            'items-center space-x-1 font-medium',
-            'hover:text-primary-3 dark:hover:text-primary-2'
-          )}
-        >
-          <span>See all post</span>
-          <ArrowSmRightIcon
-            className={twclsx(
-              'inline-flex w-4 h-4 transition-all duration-200',
-              '-translate-x-4 group-hover:translate-x-0',
-              'opacity-0 group-hover:opacity-100'
-            )}
-          />
-        </UnstyledLink>
-      </BlogList>
+      <BlogList blogs={blogs} title='Recent posts'></BlogList>
     </Layout>
   )
 }
