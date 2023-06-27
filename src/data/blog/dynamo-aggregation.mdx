@@ -34,43 +34,43 @@ to track the success of the program and to display insights for stakeholders.
 
 Here is a what a simplified version `traprecord` table looks like.
 
-<div class='relative overflow-x-auto'>
-  <table class='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
-    <thead class='text-xs text-gray-700  bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
+<div className='relative overflow-x-auto'>
+  <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
+    <thead className='text-xs text-gray-700  bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
       <tr>
-        <th scope='col' class='px-6 py-3'>
+        <th scope='col' className='px-6 py-3'>
           ID (partition key)
         </th>
-        <th scope='col' class='px-6 py-3'>
+        <th scope='col' className='px-6 py-3'>
           userId (GSI)
         </th>
-        <th scope='col' class='px-6 py-3'>
+        <th scope='col' className='px-6 py-3'>
           trapcount
         </th>
-        <th scope='col' class='px-6 py-3'>
+        <th scope='col' className='px-6 py-3'>
           monthyear
         </th>
  
       </tr>
     </thead>
     <tbody>
-      <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
-        <td class='px-6 py-4'>123-2023-05</td>
-        <td class='px-6 py-4'>123</td>
-        <td class='px-6 py-4'>5</td>
-        <td class='px-6 py-4'>2023-05</td>
+      <tr className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
+        <td className='px-6 py-4'>123-2023-05</td>
+        <td className='px-6 py-4'>123</td>
+        <td className='px-6 py-4'>5</td>
+        <td className='px-6 py-4'>2023-05</td>
       </tr>
-      <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
-        <td class='px-6 py-4'>124-2023-05</td>
-        <td class='px-6 py-4'>124</td>
-        <td class='px-6 py-4'>11</td>
-        <td class='px-6 py-4'>2023-05</td>
+      <tr className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
+        <td className='px-6 py-4'>124-2023-05</td>
+        <td className='px-6 py-4'>124</td>
+        <td className='px-6 py-4'>11</td>
+        <td className='px-6 py-4'>2023-05</td>
       </tr>
-      <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
-        <td class='px-6 py-4'>125-2023-05</td>
-        <td class='px-6 py-4'>125</td>
-        <td class='px-6 py-4'>3</td>
-        <td class='px-6 py-4'>2023-05</td>
+      <tr className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
+        <td className='px-6 py-4'>125-2023-05</td>
+        <td className='px-6 py-4'>125</td>
+        <td className='px-6 py-4'>3</td>
+        <td className='px-6 py-4'>2023-05</td>
       </tr>
     </tbody>
 
@@ -108,24 +108,24 @@ So the approach is
 
 Here is what the `traprecord-monthly` table might look like if we aggregated the above data.
 
-<div class='relative overflow-x-auto'>
-  <table class='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
-    <thead class='text-xs text-gray-700  bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
+<div className='relative overflow-x-auto'>
+  <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
+    <thead className='text-xs text-gray-700  bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
       <tr>
-        <th scope='col' class='px-6 py-3'>
+        <th scope='col' className='px-6 py-3'>
           ID (partition key)
         </th>
-        <th scope='col' class='px-6 py-3'>
+        <th scope='col' className='px-6 py-3'>
           total
         </th>
  
       </tr>
     </thead>
     <tbody>
-      <tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
+      <tr className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
  
-        <td class='px-6 py-4'>2023-05</td>
-        <td class='px-6 py-4'>19</td>
+        <td className='px-6 py-4'>2023-05</td>
+        <td className='px-6 py-4'>19</td>
       </tr>
  
  
