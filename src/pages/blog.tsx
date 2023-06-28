@@ -9,9 +9,11 @@ import { useSearchBlogQuery } from '@/hooks'
 import type { GetStaticProps, NextPage } from 'next'
 import { Blog } from 'next-starter-blog'
 
+const description =
+  'I write on all topics related to web development. In the coming future be focusing on topics related to React, NextJs, Uniswap, Serverless framework and DynamoDB.'
 const meta = {
   title: 'Blog',
-  description: `I've been writing online since 2020, mostly about data science, machine learning and tech careers. On purpose for documentation while able to share my knowledge. Use the search below to filter by title.`
+  description
 }
 
 interface BlogPageProps {
