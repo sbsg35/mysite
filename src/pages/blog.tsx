@@ -10,7 +10,7 @@ import type { GetStaticProps, NextPage } from 'next'
 import { Blog } from 'next-starter-blog'
 
 const description =
-  'I write on all topics related to web development. In the coming future be focusing on topics related to React, NextJs, Uniswap, Serverless framework and DynamoDB.'
+  'I write on all topics related to web development. In the coming future be focusing on topics related to React, NextJs, Web3, Serverless framework and DynamoDB.'
 const meta = {
   title: 'Blog',
   description
