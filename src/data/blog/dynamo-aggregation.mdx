@@ -1,14 +1,14 @@
 ---
 featured: true
-title: 'DynamoDb streams'
-summary: 'Use streams to aggregate data in Dynamo'
+title: 'DynamoDB streams'
+summary: 'Use streams to aggregate data in Dynamo.'
 published: '06/27/2023'
 last_modified: '06/27/2023'
 author_name: 'Raj Ghuman'
 author_image: '/static/avatar.jpeg'
 thumbnail: '/static/dynamo.jpeg'
 tags: ['DynamoDB', 'AWS', 'Serverless framework']
-keywords: ['How to do aggregation in DynamoDb', 'Serverless framework']
+keywords: ['How to do aggregation in DynamoDB', 'Serverless framework']
 ---
 
 ## Introduction
@@ -273,3 +273,12 @@ export const aggregateData = async (
     }
 }
 ```
+
+## Other use cases
+
+Other use cases for streams could be:
+
+- Sending an email to a user when they sign up or update their details
+- Updating data in an external search provider like Algolia
+- Incrementing a `like` count on a social media platform
+- Backing up data on each update, we can have a full record of all changes this way.

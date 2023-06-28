@@ -12,26 +12,27 @@ keywords: ['Uniswap v2 interface', 'Uniswap clone']
 
 ## Introduction
 
-If you are planning on forking Uniswap V2, but you want to have a custom frontend, this post is for you.
+If you are planning on forking Uniswap V2 and you want custom frontend detached from the
+[Uniswap V2 interface codebase](https://github.com/Uniswap/interface/releases/tag/v2.6.5), this post is for you.
+I will be doing a post which goes deep into the code and Uniswap concepts.
+For now, this is a high level approach and I assume you know the basics of Uniswap.
 
 I was tasked to build the [SOMA.finance](https://www.soma.finance/) Decentralised Exchange (DEX) and Liquidity platform.
 The contracts were based on Uniswap V2 contracts with security/whitelist additions.
 
 In this article I will talk about Swap and do a seperate article on Liquidity.
 
-I will be doing a post which goes deep into the code and Uniswap concepts. For now, this is a surface level approach.
+## Initial approach
 
-## Initial steps
+I originally forked the [Uniswap V2 interface](https://github.com/Uniswap/interface/releases/tag/v2.6.5)
+repository and it worked fairly seamlessly with our contracts after some wrangling. Soon however there were some problems:
 
-I originally forked the [Uniswap V2 interface](https://github.com/Uniswap/interface/releases/tag/v2.6.5) repository and it worked fairly seamlessly with our contracts after some wrangling. Surely enough I ran into
-some problems;
-
-- Codebase was outdated
-- It had a lot of stuff we didn't need
+- Codebase was quite outdated
+- It had a lot of features we didn't need (token lists, creating liquidity pools, etc)
 - Difficult to expand it and build new features on it
-- It was very slow
 - We needed it to fit within the rest of our theme and design system
-- Didn't fit in with our existing stack
+- Didn't fit in with our existing tech stack
+- It was very slow
 
 Given the above, I investigated building the frontend from scratch and it was easier than expected.
 
@@ -39,13 +40,16 @@ Given the above, I investigated building the frontend from scratch and it was ea
 
 - If you want to build something quickly, this [article
   by Ben Haslam](https://medium.com/clearmatics/how-i-made-a-uniswap-interface-from-scratch-b51e1027ca87) is a good starting point.
-- If you want to build something more scalable, utilising the [V2 SDK](https://github.com/Uniswap/v2-sdk) is the best way to go.
+- If you want to build something more scalable, utilising the [V2 SDK](https://github.com/Uniswap/v2-sdk)
+  with your custom front end is the best approach.
 
 ## Has this been done before
 
-Obviously there are a gazillion forks of Uniswap interface, but I was looking for a fork without all the extra stuff. The [article
-by Ben Haslam](https://medium.com/clearmatics/how-i-made-a-uniswap-interface-from-scratch-b51e1027ca87) was a really good starting point. My main concern with this approach was that it
-was using direct web3 calls to fetch the swap prices with the `getAmountsOut` method.
+Obviously there are a gazillion forks of Uniswap interface, but we wanted to build from scratch. The [article
+by Ben Haslam](https://medium.com/clearmatics/how-i-made-a-uniswap-interface-from-scratch-b51e1027ca87) was a really good starting point.
+My main concern with this approach was that it was using direct web3 calls to fetch the swap prices with the `getAmountsOut` method.
+In the SDK there are helper functions which calculate this price information based on the reserves in the pairs involved in the trade.
+So we don't need to do constant debounced web3 calls as long as our pair information is up to date.
 
 ## Uniswap V2 SDK
 
@@ -62,7 +66,7 @@ Make sure to update the `FACTORY_ADDRESS` and `INIT_CODE_HASH` in [this file](ht
 
 ## Swap
 
-Below are the methods you need from the Uniswap SDK to execute a swap.
+Below are the high level methods you need from the Uniswap SDK to execute a swap.
 You will need to construct the arguments for these methods choosing whichever libraries you prefer.
 
 ### Prior to executing swap
@@ -71,7 +75,7 @@ Use these methods from the SDK to get the data needed **before** executing a swa
 
 `Trade.bestTradeExactIn`
 
-This will find the best path for a trade, given a list of pairs. It returns a `Trade` object,
+This will find the best path for a trade. It returns a `Trade` object,
 which has all the information you need to display before making a trade.
 
 `Trade.bestTradeExactOut`
