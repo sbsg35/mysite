@@ -7,7 +7,7 @@ last_modified: '06/27/2023'
 author_name: 'Raj Ghuman'
 author_image: '/static/avatar.jpeg'
 thumbnail: '/static/dynamo.jpeg'
-tags: ['DynamoDB', 'AWS', 'Serverless framework']
+tags: ['DynamoDB', 'AWS', 'Serverless framework', 'You cant do this in Dynamo']
 keywords: ['How to do aggregation in DynamoDB', 'Serverless framework']
 ---
 
@@ -23,8 +23,7 @@ SELECT SUM(amount) FROM sales;
 
 There is a work around using DynamoDB streams which I will discuss in this post.
 
-For the record, I would just use relational database, but I wanted to learn a
-bit more about Dynamo.
+For the record, I would just use relational database, but I wanted to learn more about Dynamo.
 
 ## Background
 
@@ -89,9 +88,9 @@ FROM traprecord
 GROUP BY monthyear;
 ```
 
-However this is not possible in DynamoDB.
+This is not possible in DynamoDB.
 
-One way to achieve this is with [DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html).
+This functionality is achieveable with [DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html).
 
 ## DynamoDB streams
 
@@ -103,10 +102,10 @@ So the approach is
 
 1. Create a new table `traprecord-monthly`
 2. Make the partion key & primary key the `monthyear`
-3. Every time a user adds a new traprecord, we run a lambda function to update
+3. When a user adds a new traprecord, a lambda function updates
    this table based on the event type (UPDATE, CREATE, DELETE).
 
-Here is what the `traprecord-monthly` table might look like if we aggregated the above data.
+Here is what the `traprecord-monthly` table looks like if we aggregated the above data.
 
 <div className='relative overflow-x-auto'>
   <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
@@ -136,7 +135,8 @@ Here is what the `traprecord-monthly` table might look like if we aggregated the
 
 ## How to setup streams
 
-I use the [Serverless framework](https://www.serverless.com/). It's a wrapper around CloudFormation which makes it very easy
+I use the [Serverless framework](https://www.serverless.com/). It's a wrapper around
+CloudFormation which makes it very easy
 to deploy your AWS stack.
 
 Here is what your serverless.yml (or serverless.ts) file might look like.
@@ -156,7 +156,7 @@ resources: {
         ],
         KeySchema: [...],
         BillingMode: "PAY_PER_REQUEST",
-        // THIS IS KEY
+        // This is where we setup the stream
         StreamSpecification: { StreamViewType: "NEW_AND_OLD_IMAGES" },
         GlobalSecondaryIndexes: [...],
       },
@@ -174,7 +174,7 @@ resources: {
 ...
 ```
 
-Great now all we have to do is set up a lambda function to fire whenever there is
+Now we have to set up a lambda function to fire whenever there is
 an update to the `traprecord` table.
 
 ```ts

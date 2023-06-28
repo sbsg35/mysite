@@ -6,15 +6,15 @@ published: '06/27/2023'
 last_modified: '06/27/2023'
 author_name: 'Raj Ghuman'
 author_image: '/static/avatar.jpeg'
-tags: ['Uniswap', 'Web3', 'Blockchain', 'Frontend']
+tags: ['Uniswap', 'Web3', 'Blockchain', 'Frontend', 'My portfolio']
 keywords: ['Uniswap v2 interface', 'Uniswap clone']
 ---
 
 ## Introduction
 
-If you are planning on forking Uniswap V2 and you want custom frontend detached from the
-[Uniswap V2 interface codebase](https://github.com/Uniswap/interface/releases/tag/v2.6.5), this post is for you.
-I will be doing a post which goes deep into the code and Uniswap concepts.
+If you want to fork Uniswap V2 and with custom frontend, read on.
+
+I will be doing a seperate post which goes deep into the code and Uniswap concepts.
 For now, this is a high level approach and I assume you know the basics of Uniswap.
 
 I was tasked to build the [SOMA.finance](https://www.soma.finance/) Decentralised Exchange (DEX) and Liquidity platform.
@@ -25,16 +25,16 @@ In this article I will talk about Swap and do a seperate article on Liquidity.
 ## Initial approach
 
 I originally forked the [Uniswap V2 interface](https://github.com/Uniswap/interface/releases/tag/v2.6.5)
-repository and it worked fairly seamlessly with our contracts after some wrangling. Soon however there were some problems:
+repository and it worked fairly seamlessly with our contracts after some wrangling.
+Then I started running into problems:
 
-- Codebase was quite outdated
 - It had a lot of features we didn't need (token lists, creating liquidity pools, etc)
-- Difficult to expand it and build new features on it
-- We needed it to fit within the rest of our theme and design system
+- The code was outdated, which made it difficult to build new features upon
+- Biggest reason: the stakeholders wanted it to be built with our curent design system
 - Didn't fit in with our existing tech stack
 - It was very slow
 
-Given the above, I investigated building the frontend from scratch and it was easier than expected.
+Given the above, I explored building the frontend from scratch and it was easier than expected.
 
 **TLDR**
 
@@ -45,16 +45,17 @@ Given the above, I investigated building the frontend from scratch and it was ea
 
 ## Has this been done before
 
-Obviously there are a gazillion forks of Uniswap interface, but we wanted to build from scratch. The [article
-by Ben Haslam](https://medium.com/clearmatics/how-i-made-a-uniswap-interface-from-scratch-b51e1027ca87) was a really good starting point.
-My main concern with this approach was that it was using direct web3 calls to fetch the swap prices with the `getAmountsOut` method.
+Obviously there are a gazillion forks of Uniswap interface, but we wanted to build from scratch.
+The above approach mentioned by Ben Haslam was a good start.
+My main concern with this approach was that it was using direct web3 calls to fetch things like swap prices with the `getAmountsOut` method.
 In the SDK there are helper functions which calculate this price information based on the reserves in the pairs involved in the trade.
-So we don't need to do constant debounced web3 calls as long as our pair information is up to date.
+So we don't need to do constant debounced web3 calls to get
+latest price info as users are entering their trade amounts. We just need to make sure the
+pair reserves data is up to date.
 
 ## Uniswap V2 SDK
 
 I recommend leveraging the [V2 SDK](https://github.com/Uniswap/v2-sdk) if you want to build a custom frontend.
-It has fantastic utilities which make it very easy to build the interface.
 
 The advantages of using the SDK
 
@@ -67,7 +68,7 @@ Make sure to update the `FACTORY_ADDRESS` and `INIT_CODE_HASH` in [this file](ht
 ## Swap
 
 Below are the high level methods you need from the Uniswap SDK to execute a swap.
-You will need to construct the arguments for these methods choosing whichever libraries you prefer.
+You will need to construct the arguments for these methods.
 
 ### Prior to executing swap
 
