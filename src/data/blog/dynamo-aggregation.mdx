@@ -13,9 +13,9 @@ keywords: ['How to do aggregation in DynamoDB', 'Serverless framework']
 
 ## Introduction
 
-DynamoDB doesn't support aggregation queries out of the box.
+DynamoDB doesn't support aggregation queries.
 
-So we can't do things like this very easily:
+So we can't do things like this:
 
 ```sql
 SELECT SUM(amount) FROM sales;
@@ -26,10 +26,10 @@ There is a work around using DynamoDB streams which I will discuss in this post.
 ## Background
 
 I am building a proof of concept pest tracker software for a local volunteer group.
-Members of the group record how many pests they caught in a given month. This information is used
+Members record how many pests they caught in a given month. This information is used
 to track the success of the program and to display insights for stakeholders.
 
-Here is a what a simplified version `traprecord` table looks like.
+This is a simplified version `traprecord` table.
 
 <div className='relative overflow-x-auto'>
   <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
@@ -78,7 +78,7 @@ Here is a what a simplified version `traprecord` table looks like.
 
 I needed the total `trapcount` for each month.
 
-The equivalent SQL statement would be something like this:
+The equivalent SQL statement would be:
 
 ```sql
 SELECT monthyear, SUM(trapcount)
@@ -92,7 +92,7 @@ This functionality is achieveable with [DynamoDB Streams](https://docs.aws.amazo
 
 ## DynamoDB streams
 
-You can think of DynamoDB streams as SQL triggers.
+Think of DynamoDB streams like SQL triggers.
 When a record in a table changes (CREATE, UPDATE or DELETE), we can run a lambda function
 that does our business logic with the data.
 
