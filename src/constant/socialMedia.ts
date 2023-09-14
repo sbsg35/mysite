@@ -10,7 +10,7 @@ export const socialMedia: Array<SocialMediaProps> = [
   },
   {
     children: 'Github',
-    href: 'https://github.com/sukhrajghuman'
+    href: 'https://github.com/sbsg35'
   },
   {
     children: 'Linkedin',
