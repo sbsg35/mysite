@@ -1,0 +1,43 @@
+---
+featured: true
+title: 'AWS Lambda, at scale'
+summary: 'Do not rely on AWS Lambda to infinitely scale.'
+published: '05/05/2024'
+last_modified: '05/05/2024'
+author_name: 'Raj Ghuman'
+author_image: '/static/avatar.jpeg'
+thumbnail: '/static/aws-lambda.png'
+tags: ['AWS', 'Lambda', 'Scalability', 'Devops']
+keywords: ['AWS Lambda', 'Scaling']
+---
+
+Do not rely on AWS Lambda to infinitely scale. You must understand concepts when using AWS Lambda service for large scale operations.
+
+- Concurrency
+- Provisioned concurrency
+- Reserved concurrency
+- Burst concurrency
+
+## Concurrency
+Concurrency is the number of in-flight requests that your Lambda function is handling at the same time.
+Every account has a total concurrency limit of 1,000 concurrent executions across all functions in an AWS Region (contact AWS support to modify this).
+Lambda scales creates more execution environments according to the number of concurrent requests.
+
+If a Lambda function takes 1 second to process request, and there are 100 requests per second, the concurrency is 100.
+If you more than 1000 requests at the same time, there will be throttling.
+
+## Provisioned concurrency
+Sets the minimum number of execution environments (EE). Prewarms your functions and good for anticipated traffic spikes.
+It also prevents cold starts. The cost is higher since there are EE's always running.
+
+## Reserved concurrency
+Use this flag to set a max concurrency limit per function. 
+Using this can prevent a single function from using all account level concurrency.
+
+
+## Burst concurrency
+Lambda your concurrency **scaling rate** is 1,000 EE instances every 10 seconds.
+For spiky traffic this is not enough. In my current job, a particular microservice receives very spiky traffic.
+Lambda could not scale fast enough, resulting in 429 throttling errors. 
+
+I rebuilt this microservice, but that will be a seperate post.
