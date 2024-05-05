@@ -16,7 +16,7 @@ const Home: NextPage<HomeProps> = ({ blogs = [] }) => {
   const meta = {
     title: ownerName + ' G',
     template: 'Personal Blog',
-    description: `I'm ${ownerName}, a software engineer currently working for SOMA.finance.`,
+    description: `I'm ${ownerName}, a software engineer.`,
     openGraph: {
       images: [
         {
