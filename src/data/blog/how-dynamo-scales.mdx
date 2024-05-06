@@ -1,0 +1,72 @@
+---
+featured: true
+title: 'How does DynamoDB scale?'
+summary: 'It's just about infinetly scalable.'
+published: '06/05/2024'
+last_modified: '05/05/2024'
+author_name: 'Raj Ghuman'
+author_image: '/static/avatar.jpeg'
+thumbnail: '/static/dynamo-scale.png'
+tags: ['AWS', 'DynamoDB', 'Database', 'NoSql', "Scaling"]
+keywords: ['AWS Lambda', 'DynamoDB']
+---
+
+DynamoDB can receive 1k RCU per partition and 1k WCU **per partition**, per second.
+What does that actually mean for me?
+
+## Dynamo capacity units 
+
+### WCU (write capacity units)
+One WCU is a write of up to 1KB
+
+- Writing 1 item of 1KB consumes 1WCU
+- Writing 2 item of 1.5KB consuimes 2WCU
+
+### RCU (read capacity units)
+- Reading 1 item of 4KB consumes 1WCU
+- Reading 2 item of 5KB consuimes 2WCU
+
+## Partition
+A partition is a portion of your data. A single partition can upto 10gb of data.
+
+DynamoDB partitions transparently, based on your partition key (and other factors). Key ranges are stored together
+in the same partition, for quick access.
+In the following example, imagine suburb is the partition key, and street is the sort key.
+
+|suburb|street|
+|------|-------|
+| Melbourne | Swanston |
+| Melbourne| Flinders |
+| Hawthorn | Auburn | 
+
+If this table is big enough (or gets enough traffic), the Melbourne data will be stored in the same partition.
+
+## So how much throughput can I achieve?
+
+DynamoDB can receive 1k RCU per partition and 1k WCU per partition, per second.
+The key words here are **per partition**. 
+
+DynamoDB scales by splitting data into different partitions. 
+If it detects the table or partition is having increased demand, it will intelligently "partition" (or split) the data.
+
+> DynamoDB does not merge partitions, it only splits them.
+
+This [article has more detail](https://aws.amazon.com/blogs/database/part-3-scaling-dynamoDB-how-partitions-hot-keys-and-split-for-heat-impact-performance/), but you can effectively achieve millions of reads/writes per second.
+
+## Choosing the right mode (provisioned vs on demand)
+
+### On demand
+Let AWS handle scaling for you
+
+### Provisioned
+Choose your desired WCU/RCU
+
+### What to choose?
+
+My preference is to use On Demand UNLESS you are migrating a high traffic table into DynamoDB.
+If your newly created DynamoDB table is expecting high number of requests, 
+it is better to start with Provisioned, and then later switch to On emand.
+
+The partitioning doesn't happen straight away in On Demand, so there could be a period of low throughput, resulting in throttling errors.
+
+
