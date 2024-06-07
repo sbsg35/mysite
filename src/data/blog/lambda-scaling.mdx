@@ -11,8 +11,7 @@ tags: ['AWS', 'Lambda', 'Scalability', 'Devops']
 keywords: ['AWS Lambda', 'Scaling']
 ---
 
-I had thought AWS Lambda service could handle any amount of scale. I was wrong.
-Before you rely on AWS Lambda to infinitely scale, understand these concepts:
+AWS Lambda does not "infinitely scale". To avoid throttling or other unexpected behaviours, you understand these concepts:
 
 - Concurrency
 - Provisioned concurrency
@@ -25,19 +24,24 @@ Before you rely on AWS Lambda to infinitely scale, understand these concepts:
 Lambda creates more execution environments according to the number of concurrent requests.
 
 If a Lambda function takes 1 second to process request, and there are 100 requests per second, the concurrency is 100.
-Throttling occurs after the default concurrency limit of 1000 is reached.
+**Throttling occurs** after the default concurrency limit of 1000 is reached.
 
 ## Provisioned concurrency
-Sets the minimum number of execution environments (EE). Prewarms your functions and good for anticipated traffic spikes.
-It can also help prevent cold starts. The cost is higher since there are EE's always running.
+Sets the minimum number of execution environments (EE). Prewarms your functions and good for anticipated traffic spikes. It will also minimise cold starts.
+AWS Lambda charges for execution time (and number of requests), so provisioned concurrency will incur extra costs.
 
 ## Reserved concurrency
-Use this flag to set a max concurrency limit per function. 
-Using this can prevent a single function from using all account level concurrency.
+Sets a maximum concurrency for a function. No additional costs for setting reserved concurrency.
+
+Use this when:
+- ensure critical functions have enough share of account level concurrency
+- you need to put a upper cap on a function
+
+> Important: once you have reserved x concurrency on a lambda function, other functions can use that concurrency.
 
 
 ## Burst concurrency
-Lambda your concurrency **scaling rate** is 1,000 EE instances every 10 seconds.
+The concurrency scaling rate is 1,000 EE instances every 10 seconds.
 For extremely high volume spiky traffic, this can cause issues. 
 In my current job, a microservice using Lambda had very spiky high volume traffic. It would often run into throttling errors, because it could not scale fast enough.
 I rebuilt this microservice, but that will be a seperate post.
