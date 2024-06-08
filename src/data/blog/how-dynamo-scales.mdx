@@ -11,10 +11,14 @@ tags: ['AWS', 'DynamoDB', 'Database', 'NoSql', "Scaling"]
 keywords: ['AWS Lambda', 'DynamoDB']
 ---
 
-DynamoDB can receive 1k RCU per partition and 1k WCU **per partition**, per second.
-What does that actually mean for me?
+## How much throughput can I achieve with DynamoDb?
 
-## Dynamo capacity units 
+DynamoDB has a limit of 1k RCU per partition and 1k WCU **per partition**, per second.
+What does that _actually_ mean for me?
+
+## Dynamo capacity units
+
+Let's understand these concepts first.
 
 ### WCU (write capacity units)
 One WCU is a write of up to 1KB
@@ -31,7 +35,9 @@ A partition is a portion of your data. A single partition can upto 10gb of data.
 
 DynamoDB partitions transparently, based on your partition key (and other factors). Key ranges are stored together
 in the same partition, for quick access.
-In the following example, imagine suburb is the partition key, and street is the sort key.
+
+In the following example, suburb is the partition key, and street is the sort key. Melbourne data will likely be stored together, especially if this
+table expects high read/writes.
 
 |suburb|street|
 |------|-------|
@@ -39,15 +45,13 @@ In the following example, imagine suburb is the partition key, and street is the
 | Melbourne| Flinders |
 | Hawthorn | Auburn | 
 
-If this table is big enough (or gets enough traffic), the Melbourne data will be stored in the same partition.
-
 ## So how much throughput can I achieve?
 
-DynamoDB can receive 1k RCU per partition and 1k WCU per partition, per second.
+DynamoDB's upper limit is 1k RCU per partition and 1k WCU per partition, per second.
 The key words here are **per partition**. 
 
 DynamoDB scales by splitting data into different partitions. 
-If it detects the table or partition is having increased demand, it will intelligently "partition" (or split) the data.
+If it detects the table or partition is having increased demand, it will intelligently "partition" (or split) the data. More partitions means more throughput.
 
 > DynamoDB does not merge partitions, it only splits them.
 
@@ -63,9 +67,11 @@ Choose your desired WCU/RCU
 
 ### What to choose?
 
-My preference is to use On Demand UNLESS you are migrating a high traffic table into DynamoDB.
-If your newly created DynamoDB table is expecting high number of requests, 
-it is better to start with Provisioned, and then later switch to On emand.
+Use On Demand, except if:
+- anticipating spiky loads
+- migrating large amounts of data to DynamoDb and expecting high traffic initially
+
+In the second point, you can start with Provisioned, and then later switch to On Demand.
 
 The partitioning doesn't happen straight away in On Demand, so there could be a period of low throughput, resulting in throttling errors.
 
