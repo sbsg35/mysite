@@ -19,7 +19,7 @@ AWS Lambda does not "infinitely scale". To avoid throttling or other unexpected 
 - Burst concurrency
 
 ## Concurrency
-> Concurrency is the number of in-flight requests that your Lambda function is handling at the same time. Every account has a total concurrency limit of 1,000 concurrent executions across all functions in an AWS Region (contact AWS support to modify this).
+> Concurrency is the number of in-flight requests that your Lambda function is handling at the same time. Every account has a total concurrency limit of 1,000 concurrent executions across all functions in an AWS Region.
 
 Lambda creates more execution environments according to the number of concurrent requests.
 
@@ -27,8 +27,8 @@ If a Lambda function takes 1 second to process request, and there are 100 reques
 **Throttling occurs** after the default concurrency limit of 1000 is reached.
 
 ## Provisioned concurrency
-Sets the minimum number of execution environments (EE). Prewarms your functions and good for anticipated traffic spikes. It will also minimise cold starts.
-AWS Lambda charges for execution time (and number of requests), so provisioned concurrency will incur extra costs.
+Sets the minimum number of execution environments (EE). This is good for anticipated traffic spikes. If you set a provisioned concurrency of 100, AWS Lambda will keep 100 execution environments warm and ready to respond immediately to requests.
+AWS Lambda charges for execution time and provisioned concurrency, so you will pay for the provisioned concurrency even if it is not used.
 
 ## Reserved concurrency
 Sets a maximum concurrency for a function. No additional costs for setting reserved concurrency.
@@ -37,11 +37,11 @@ Use this when:
 - ensure critical functions have enough share of account level concurrency
 - you need to put a upper cap on a function
 
-> Important: once you have reserved x concurrency on a lambda function, other functions can use that concurrency.
+> Important: once you have reserved x concurrency on a lambda function, other functions in the account can only use the remaining concurrency. For example, if you have 1000 total concurrency and reserve 100 for a function, only 900 concurrency is available for other functions.
 
 
 ## Burst concurrency
 The concurrency scaling rate is 1,000 EE instances every 10 seconds.
-For extremely high volume spiky traffic, this can cause issues. 
+For extremely high volume spiky traffic, if your function is invoked at a rate higher than the burst concurrency, it will be throttled until the burst concurrency catches up.
 In my current job, a microservice using Lambda had very spiky high volume traffic. It would often run into throttling errors, because it could not scale fast enough.
-I rebuilt this microservice, but that will be a seperate post.
+I will be writing a follow-up article on how we solved this problem.

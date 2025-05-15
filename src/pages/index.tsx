@@ -33,7 +33,7 @@ const Home: NextPage<HomeProps> = ({ blogs = [] }) => {
     <Layout as='main' {...meta}>
       <HeroWithPhoto image='/static/avatar.jpeg' imageAlt={ownerName} {...meta}>
         <p className={twclsx('max-w-prose mt-2')}>
-          If you want to get in touch with me, please reach out to me on linkedin.
+          I primarily develop with Node.js, TypeScript, React, and AWS, focusing on building highly scalable and secure backend systems.
         </p>
       </HeroWithPhoto>
 
