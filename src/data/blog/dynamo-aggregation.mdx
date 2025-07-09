@@ -1,6 +1,6 @@
 ---
 featured: true
-title: 'DynamoDB streams'
+title: 'DynamoDB aggregation using streams'
 summary: 'Use streams to aggregate data in Dynamo.'
 published: '06/27/2023'
 last_modified: '06/27/2023'
@@ -22,6 +22,8 @@ SELECT SUM(amount) FROM sales;
 ```
 
 There is a work around using DynamoDB streams which I will discuss in this post.
+
+> Goes without saying, if you have complex queries, you should consider using a relational database like PostgreSQL or MySQL.
 
 ## Background
 

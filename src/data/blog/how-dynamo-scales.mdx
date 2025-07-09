@@ -71,7 +71,7 @@ Use On Demand, except if:
 - anticipating spiky loads
 - migrating large amounts of data to DynamoDb and expecting high traffic initially
 
-In the second point, you can start with Provisioned, and then later switch to On Demand.
+If migrating large amounts of data, you can start with Provisioned, and then later switch to On Demand.
 
 The partitioning doesn't happen straight away in On Demand, so there could be a period of low throughput, resulting in throttling errors.
 
