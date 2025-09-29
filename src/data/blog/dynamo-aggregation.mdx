@@ -23,11 +23,11 @@ SELECT SUM(amount) FROM sales;
 
 There is a work around using DynamoDB streams which I will discuss in this post.
 
-> Goes without saying, if you have complex queries, you should consider using a relational database like PostgreSQL or MySQL.
+This goes without saying, if you have complex queries, you should consider using a relational database like PostgreSQL or MySQL.
 
 ## Background
 
-I am building a proof of concept pest tracker software for a local volunteer group.
+I was working on a proof of concept pest tracker software for a local volunteer group. The choice of database was dynamodb (although relational database would have been better).
 Members record how many pests they caught in a given month. This information is used
 to track the success of the program and to display insights for stakeholders.
 

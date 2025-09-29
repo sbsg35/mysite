@@ -44,4 +44,5 @@ Use this when:
 The concurrency scaling rate is 1,000 EE instances every 10 seconds.
 For extremely high volume spiky traffic, if your function is invoked at a rate higher than the burst concurrency, it will be throttled until the burst concurrency catches up.
 In my current job, a microservice using Lambda had very spiky high volume traffic. It would often run into throttling errors, because it could not scale fast enough.
-I will be writing a follow-up article on how we solved this problem.
+
+If you are hitting the burst limits consistently, provisioning concurrency may help get around this. Alternatively, another form of long running compute, such as EC2 or ECS, may be more appropriate.
